@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import LoginPage from "../pages/LoginPage.jsx";
+import LoanOverview from "../pages/LoanOverview.jsx";
 import EmployeesPage from "../pages/EmployeesPage.jsx";
 import EmployeeDetailsPage from "../pages/EmployeeDetailsPage.jsx";
 import CreateEmployeePage from "../pages/CreateEmployeePage.jsx";
@@ -16,6 +17,7 @@ export default function AppRouter() {
 
         <Route path="/login" element={<LoginPage />} />
 
+        <Route path="/loans" element={<LoanOverview />} />
         <Route path="/employees" element={<ProtectedRoute><EmployeesPage /></ProtectedRoute>} />
         <Route path="/employees/create" element={<ProtectedRoute><CreateEmployeePage /></ProtectedRoute>} />
         <Route path="/employees/edit/:id" element={<ProtectedRoute><EditEmployeePage /></ProtectedRoute>} />
