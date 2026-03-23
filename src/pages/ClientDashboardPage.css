@@ -1,9 +1,8 @@
 .dash-shell {
     min-height: 100vh;
-    background-color: #0A0E17;
     display: flex;
     flex-direction: column;
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     color: #e6edf3;
     overflow-x: hidden;
 }
