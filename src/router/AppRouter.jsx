@@ -16,7 +16,6 @@ import ProtectedRoute from "./ProtectedRoute.jsx";
 import AdminLoansPage from "../pages/AdminLoansPage.jsx";
 import LoanApplicationPage from "../pages/LoanApplicationPage.jsx"
 import BusinessDetailsPage from "../pages/BusinessDetailsPage.jsx";
-import CreateBusinessAccountPage from "../pages/CreateBusinessAccountPage";
 import ForgotPasswordPage from "../pages/ForgotPasswordPage.jsx";
 import EnterTokenPage from "../pages/EnterTokenPage.jsx";
 import AccountDetailsPage from "../pages/AccountDetailsPage.jsx";
@@ -24,7 +23,6 @@ import CreateAccountPage from "../pages/CreateAccountPage.jsx";
 import ClientDashboardPage from "../pages/ClientDashboardPage.jsx";
 import ExchangePage from "../pages/ExchangePage.jsx";
 import PaymentPage from "../pages/PaymentPage.jsx";
-import ActuaryManagementPage from "../pages/ActuaryManagementPage.jsx";
 
 export default function AppRouter() {
   return (
@@ -56,7 +54,6 @@ export default function AppRouter() {
         <Route path="/accounts/business/:id" element={<ProtectedRoute><BusinessDetailsPage /></ProtectedRoute>}/>
         <Route path="/cards" element={<ProtectedRoute requiredRole="client"><CardsPage /></ProtectedRoute>} />
         <Route path="/payment" element={<ProtectedRoute requiredRole="client"><PaymentPage /></ProtectedRoute>} />
-        <Route path="/actuary-management" element={<ProtectedRoute requiredRole="supervisor"><ActuaryManagementPage /></ProtectedRoute>} />
 
         <Route path="/accounts/:id" element={<ProtectedRoute requiredRole="client"><AccountDetailsPage /></ProtectedRoute>} />
         <Route path="/exchange" element={<ProtectedRoute requiredRole="client"><ExchangePage /></ProtectedRoute>} />
