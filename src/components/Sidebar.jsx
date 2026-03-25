@@ -49,7 +49,7 @@ export default function MenuDropdown() {
     {
       title: "Dashboard",
       items: [
-        { label: "Client Dashboard", path: "/dashboard/personal" },
+        { label: "Client Dashboard", path: "/dashboard" },
       ],
     },
     {
