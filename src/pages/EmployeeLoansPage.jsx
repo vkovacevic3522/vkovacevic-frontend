@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import Sidebar from "../components/Sidebar.jsx";
 import { getLoanRequests, approveLoanRequest, rejectLoanRequest } from "../services/LoanService.js";
-import "./AdminLoansPage.css"
+import "./EmployeeLoansPage.css"
 
 export default function AdminLoansPage(){
 

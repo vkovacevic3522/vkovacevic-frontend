@@ -109,8 +109,8 @@ export default function MenuDropdown() {
         {
           title: "Krediti",
           items: [
-            { label: "Zahtevi za kredit", path: "/loan-request" },
-            { label: "Svi krediti", path: "/loans" },
+            { label: "Zahtevi za kredit", path: "/employee-loans" },
+            { label: "Svi krediti", path: "/employee-loans-list" },
           ],
         },
       ];

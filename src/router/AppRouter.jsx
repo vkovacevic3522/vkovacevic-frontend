@@ -3,7 +3,8 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import LoginPage from "../pages/LoginPage.jsx";
 import AccountsPage from "../pages/AccountsPage.jsx";
 import AdminAccountDetailsPage from "../pages/AdminAccountDetailsPage.jsx";
-import LoanOverview from "../pages/LoanOverview.jsx";
+import LoansPage from "../pages/LoansPage.jsx";
+import EmployeeLoansListPage from "../pages/EmployeeLoansListPage.jsx";
 import EmployeesPage from "../pages/EmployeesPage.jsx";
 import ClientsPage from "../pages/ClientsPage.jsx";
 import ClientDetailsPage from "../pages/ClientDetailsPage.jsx";
@@ -15,7 +16,7 @@ import RecipientsPage from "../pages/RecipientsPage.jsx";
 import PaymentsPage from "../pages/PaymentsPage.jsx";
 import CardsPage from "../pages/CardsPage.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
-import AdminLoansPage from "../pages/AdminLoansPage.jsx";
+import EmployeeLoansPage from "../pages/EmployeeLoansPage.jsx";
 import LoanApplicationPage from "../pages/LoanApplicationPage.jsx"
 import BusinessDetailsPage from "../pages/BusinessDetailsPage.jsx";
 import ForgotPasswordPage from "../pages/ForgotPasswordPage.jsx";
@@ -36,7 +37,6 @@ export default function AppRouter() {
           <Route path="/" element={<Navigate to="/login" />} />
 
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/admin-loans" element={<ProtectedRoute requiredRole="employee"><AdminLoansPage /></ProtectedRoute>} />
 
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/enter-token" element={<EnterTokenPage />} />
@@ -45,9 +45,7 @@ export default function AppRouter() {
 
           <Route path="/dashboard" element={<ProtectedRoute requiredRole="client"><ClientDashboardPage /></ProtectedRoute>} />
 
-          <Route path="/loan-request" element={<ProtectedRoute requiredRole="client"><LoanApplicationPage /></ProtectedRoute>} />
           <Route path="/accounts" element={<ProtectedRoute requiredRole="client"><AccountsPage /></ProtectedRoute>} />
-          <Route path="/loans" element={<ProtectedRoute requiredRole="client"><LoanOverview /></ProtectedRoute>} />
           <Route path="/accounts/create" element={<ProtectedRoute requiredRole="client"><CreateAccountPage /></ProtectedRoute>} />
           <Route path="/admin/accounts" element={<ProtectedRoute requiredRole="employee"><AccountsPage /></ProtectedRoute>} />
           <Route path="/admin/accounts/:accountNumber" element={<ProtectedRoute requiredRole="employee"><AdminAccountDetailsPage /></ProtectedRoute>} />
@@ -72,6 +70,11 @@ export default function AppRouter() {
           <Route path="/accounts/:id" element={<ProtectedRoute requiredRole="client"><AccountDetailsPage /></ProtectedRoute>} />
           <Route path="/exchange" element={<ProtectedRoute requiredRole="client"><ExchangePage /></ProtectedRoute>} />
           <Route path="/berza" element={<ProtectedRoute requiredRole="employee"><BerzaPage /></ProtectedRoute>} />
+
+          <Route path="/loans" element={<ProtectedRoute requiredRole="client"><LoansPage /></ProtectedRoute>} />
+          <Route path="/loan-request" element={<ProtectedRoute requiredRole="client"><LoanApplicationPage /></ProtectedRoute>} />
+          <Route path="/employee-loans" element={<ProtectedRoute requiredRole="employee"><EmployeeLoansPage /></ProtectedRoute>} />
+          <Route path="/employee-loans-list" element={<ProtectedRoute requiredRole="employee"><EmployeeLoansListPage /></ProtectedRoute>} />
 
         </Routes>
       </BrowserRouter>
