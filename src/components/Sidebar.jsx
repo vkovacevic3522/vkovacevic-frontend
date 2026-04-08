@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
-import { getPermissions, logout } from "../services/AuthService";
+import { getPermissions, logout, clearAuthState } from "../services/AuthService";
 import "./Sidebar.css";
 
 export default function MenuDropdown() {
@@ -36,13 +36,14 @@ export default function MenuDropdown() {
     }, [open]);
 
     const handleLogout = async () => {
+        // AuthService.logout ima sopstveni try/finally — lokalno stanje je
+        // garantovano obrisano čak i ako backend /logout padne. Dodatni
+        // clearAuthState() poziv je defanzivan safety net ako logout
+        // import iz bilo kog razloga baci sinhrono.
         try {
             await logout();
         } catch {
-            sessionStorage.removeItem("accessToken");
-            sessionStorage.removeItem("refreshToken");
-            sessionStorage.removeItem("userId");
-            sessionStorage.removeItem("userRole");
+            clearAuthState();
         }
 
         navigate("/login");
