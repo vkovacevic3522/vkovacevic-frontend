@@ -8,8 +8,8 @@ export default function MenuDropdown() {
   const [open, setOpen] = useState(false);
   const panelRef = useRef(null);
   const navigate = useNavigate();
-  const role = localStorage.getItem("userRole");
-
+ const role = sessionStorage.getItem("userRole");
+  
   useEffect(() => {
     if (!open) return;
 
