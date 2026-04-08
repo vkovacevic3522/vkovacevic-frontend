@@ -7,7 +7,7 @@ describe("PaymentPage", () => {
       currency: "RSD",
       account_type: "TEKUCI",
       status: "active",
-    }
+    },
   ];
 
   beforeEach(() => {
@@ -18,6 +18,15 @@ describe("PaymentPage", () => {
     cy.visit("/payment");
     cy.wait(["@getAccounts", "@getRecipients"]);
   });
+
+  function popuniValidnuFormu() {
+    cy.get('select[name="sender_account"]').select("265-0000000011234-56");
+    cy.get('input[name="recipient_account"]').clear().type("265-0000000099876-12");
+    cy.get('input[name="recipient_name"]').clear().type("Petar Nikolić");
+    cy.get('input[name="amount"]').clear().type("1000");
+    cy.get('input[name="payment_code"]').clear().type("289");
+    cy.get('input[name="purpose"]').clear().type("Uplata za usluge");
+  }
 
   it("prikazuje formu za plaćanje sa svim poljima", () => {
     cy.get('select[name="sender_account"]').should("exist");
@@ -101,13 +110,14 @@ describe("PaymentPage", () => {
 
     cy.wait("@paymentRequest");
     cy.get(".totp-overlay").should("not.exist");
-    cy.contains("uspešno").should("be.visible");
+    cy.get(".pay-success-box").should("be.visible");
+    cy.contains("Plaćanje je uspešno izvršeno!").should("be.visible");
   });
 
-  it("prikazuje grešku u TOTP modalu pri neispravnom kodu", () => {
+  it("prikazuje poruku za neispravan TOTP kod", () => {
     cy.intercept("POST", "**/api/transactions/payment", {
       statusCode: 403,
-      body: { message: "Neispravan kod" },
+      body: { message: "invalid totp code" },
     }).as("paymentRequest");
 
     cy.get('select[name="sender_account"]').select("265-0000000011234-56");
@@ -123,7 +133,140 @@ describe("PaymentPage", () => {
 
     cy.wait("@paymentRequest");
     cy.get(".totp-overlay").should("be.visible");
-    cy.contains("Neispravan").should("be.visible");
+    cy.get(".totp-error")
+        .should("be.visible")
+        .and("contain", "Uneti TOTP kod nije ispravan. Pokušajte ponovo.");
+  });
+
+  it("prikazuje poruku za nedovoljno sredstava", () => {
+    cy.intercept("POST", "**/api/transactions/payment", {
+      statusCode: 400,
+      body: { message: "insufficient funds" },
+    }).as("paymentRequest");
+
+    popuniValidnuFormu();
+
+    cy.get(".pay-btn-submit").click();
+    unesiTotpKod("123456");
+    cy.get(".totp-btn-confirm").click();
+
+    cy.wait("@paymentRequest");
+    cy.get(".totp-overlay").should("be.visible");
+    cy.get(".totp-error")
+        .should("be.visible")
+        .and(
+            "contain",
+            "Nemate dovoljno sredstava na izabranom računu za ovo plaćanje."
+        );
+  });
+
+  it("prikazuje poruku za neaktivan račun primaoca", () => {
+    cy.intercept("POST", "**/api/transactions/payment", {
+      statusCode: 400,
+      body: { message: "recipient account is inactive" },
+    }).as("paymentRequest");
+
+    popuniValidnuFormu();
+
+    cy.get(".pay-btn-submit").click();
+    unesiTotpKod("123456");
+    cy.get(".totp-btn-confirm").click();
+
+    cy.wait("@paymentRequest");
+    cy.get(".totp-overlay").should("be.visible");
+    cy.get(".totp-error")
+        .should("be.visible")
+        .and(
+            "contain",
+            "Račun primaoca nije aktivan i uplata trenutno nije moguća."
+        );
+  });
+
+  it("prikazuje poruku za prekoračen dnevni limit", () => {
+    cy.intercept("POST", "**/api/transactions/payment", {
+      statusCode: 400,
+      body: { message: "daily limit exceeded" },
+    }).as("paymentRequest");
+
+    popuniValidnuFormu();
+
+    cy.get(".pay-btn-submit").click();
+    unesiTotpKod("123456");
+    cy.get(".totp-btn-confirm").click();
+
+    cy.wait("@paymentRequest");
+    cy.get(".totp-overlay").should("be.visible");
+    cy.get(".totp-error")
+        .should("be.visible")
+        .and(
+            "contain",
+            "Prekoračili ste dnevni limit za plaćanja sa ovog računa."
+        );
+  });
+
+  it("prikazuje poruku kada račun nije pronađen", () => {
+    cy.intercept("POST", "**/api/transactions/payment", {
+      statusCode: 404,
+      body: { message: "account not found" },
+    }).as("paymentRequest");
+
+    popuniValidnuFormu();
+
+    cy.get(".pay-btn-submit").click();
+    unesiTotpKod("123456");
+    cy.get(".totp-btn-confirm").click();
+
+    cy.wait("@paymentRequest");
+    cy.get(".totp-overlay").should("be.visible");
+    cy.get(".totp-error")
+        .should("be.visible")
+        .and(
+            "contain",
+            "Uneti račun nije pronađen. Proverite broj računa i pokušajte ponovo."
+        );
+  });
+
+  it("prikazuje poruku kada sistem privremeno nije dostupan", () => {
+    cy.intercept("POST", "**/api/transactions/payment", {
+      statusCode: 503,
+      body: { message: "service unavailable" },
+    }).as("paymentRequest");
+
+    popuniValidnuFormu();
+
+    cy.get(".pay-btn-submit").click();
+    unesiTotpKod("123456");
+    cy.get(".totp-btn-confirm").click();
+
+    cy.wait("@paymentRequest");
+    cy.get(".totp-overlay").should("be.visible");
+    cy.get(".totp-error")
+        .should("be.visible")
+        .and(
+            "contain",
+            "Plaćanje trenutno nije moguće zbog privremenog problema sa sistemom. Pokušajte ponovo kasnije."
+        );
+  });
+
+  it("prikazuje poruku kada mreža nije dostupna", () => {
+    cy.intercept("POST", "**/api/transactions/payment", {
+      forceNetworkError: true,
+    }).as("paymentRequest");
+
+    popuniValidnuFormu();
+
+    cy.get(".pay-btn-submit").click();
+    unesiTotpKod("123456");
+    cy.get(".totp-btn-confirm").click();
+
+    cy.wait("@paymentRequest");
+    cy.get(".totp-overlay").should("be.visible");
+    cy.get(".totp-error")
+        .should("be.visible")
+        .and(
+            "contain",
+            "Plaćanje trenutno nije moguće zbog problema sa mrežom. Pokušajte ponovo."
+        );
   });
 
   it("zatvara TOTP modal na Otkaži", () => {
