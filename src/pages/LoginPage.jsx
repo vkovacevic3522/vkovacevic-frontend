@@ -50,7 +50,28 @@ export default function LoginPage() {
     } catch (err) {
       console.error("Login error:", err);
       if (err.response) {
-        if (err.response.status === 401) {
+        const status = err.response.status;
+        const serverMsg = err.response.data;
+        const serverMsgText =
+          typeof serverMsg === "string"
+            ? serverMsg
+            : serverMsg?.error || serverMsg?.message || "";
+
+        const normalized = String(serverMsgText).toLowerCase();
+
+        if (
+          status === 403 &&
+          (normalized.includes("activate") ||
+            normalized.includes("aktiv") ||
+            normalized.includes("set password") ||
+            normalized.includes("password") ||
+            normalized.includes("expired") ||
+            normalized.includes("inactive"))
+        ) {
+          setMessage(
+            "Nalog još nije aktiviran. Proverite email i postavite lozinku putem linka za aktivaciju (ili zatražite novi link)."
+          );
+        } else if (status === 401) {
           setMessage("Pogrešan email ili lozinka");
         } else {
           setMessage("Greška na serveru pri prijavi.");
