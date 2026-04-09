@@ -6,6 +6,11 @@ import {
   updateRecipient,
   deleteRecipient,
 } from "../services/PaymentService";
+import {
+  MAX_ACCOUNT_NUMBER_LENGTH,
+  isValidAccountNumber,
+  normalizeAccountNumberInput,
+} from "../utils/accountNumber.js";
 import Sidebar from "../components/Sidebar.jsx";
 import "./RecipientsPage.css";
 
@@ -108,7 +113,7 @@ export default function RecipientsPage() {
     const { name, value } = e.target;
     setForm((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: name === "account_number" ? normalizeAccountNumberInput(value) : value,
     }));
   }
 
@@ -125,6 +130,11 @@ export default function RecipientsPage() {
 
     if (!trimmedAccount) {
       setFormError("Broj računa je obavezan.");
+      return;
+    }
+
+    if (!isValidAccountNumber(trimmedAccount)) {
+      setFormError("Broj računa može imati najviše 20 cifara.");
       return;
     }
 
@@ -372,6 +382,8 @@ export default function RecipientsPage() {
                         value={form.account_number}
                         onChange={handleChange}
                         placeholder="Unesi broj računa"
+                        inputMode="numeric"
+                        maxLength={MAX_ACCOUNT_NUMBER_LENGTH}
                     />
                   </div>
 

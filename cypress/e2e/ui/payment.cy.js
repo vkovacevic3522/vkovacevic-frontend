@@ -1,7 +1,7 @@
 describe("PaymentPage", () => {
   const mockAccounts = [
     {
-      account_number: "265-0000000011234-56",
+      account_number: "333000001123456789",
       account_name: "Tekući račun",
       balance: 50000,
       currency: "RSD",
@@ -28,8 +28,8 @@ describe("PaymentPage", () => {
   });
 
   function popuniValidnuFormu() {
-    cy.get('select[name="sender_account"]').select("265-0000000011234-56");
-    cy.get('input[name="recipient_account"]').clear().type("265-0000000099876-12");
+    cy.get('select[name="sender_account"]').select("333000001123456789");
+    cy.get('input[name="recipient_account"]').clear().type("333000009987654321");
     cy.get('input[name="recipient_name"]').clear().type("Petar Nikolić");
     cy.get('input[name="amount"]').clear().type("1000");
     cy.get('input[name="payment_code"]').clear().type("289");
@@ -72,8 +72,8 @@ describe("PaymentPage", () => {
       body: { message: "ok" },
     }).as("paymentRequest");
 
-    cy.get('select[name="sender_account"]').select("265-0000000011234-56");
-    cy.get('input[name="recipient_account"]').type("265-0000000099876-12");
+    cy.get('select[name="sender_account"]').select("333000001123456789");
+    cy.get('input[name="recipient_account"]').type("333000009987654321");
     cy.get('input[name="recipient_name"]').type("Petar Nikolić");
     cy.get('input[name="amount"]').type("1500");
     cy.get('input[name="payment_code"]').type("289");
@@ -89,8 +89,8 @@ describe("PaymentPage", () => {
       expect(interception.request.headers).to.have.property("totp", "123456");
 
       const body = interception.request.body;
-      expect(body.sender_account).to.eq("265-0000000011234-56");
-      expect(body.recipient_account).to.eq("265-0000000099876-12");
+      expect(body.sender_account).to.eq("333000001123456789");
+      expect(body.recipient_account).to.eq("333000009987654321");
       expect(body.recipient_name).to.eq("Petar Nikolić");
       expect(body.amount).to.eq(1500);
       expect(body.payment_code).to.eq("289");
