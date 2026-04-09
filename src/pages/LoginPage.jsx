@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { login } from "../services/AuthService";
+import { useState, useEffect } from "react";
+import { login, clearAuthState } from "../services/AuthService";
 import useFailedAttempts, { BLOCKED_MESSAGE } from "../utils/useFailedAttempts";
 import "./LoginPage.css";
 import { useNavigate } from "react-router-dom";
@@ -12,6 +12,13 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const { isBlocked, increment, reset } = useFailedAttempts("login");
   const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    if (sessionStorage.getItem("sessionExpired")) {
+      setMessage("Vaša sesija je istekla, molimo prijavite se ponovo.");
+      sessionStorage.removeItem("sessionExpired");
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -68,10 +75,7 @@ export default function LoginPage() {
       } else {
         setMessage("Mrežna greška. Proverite da li je Backend pokrenut.");
       }
-      sessionStorage.removeItem("accessToken");
-      sessionStorage.removeItem("refreshToken");
-      sessionStorage.removeItem("userId");
-      sessionStorage.removeItem("userRole");
+      clearAuthState();
     } finally {
       setLoading(false);
     }
