@@ -13,6 +13,11 @@ import useFailedAttempts, {
     BLOCKED_MESSAGE,
     MAX_FAILED_ATTEMPTS,
 } from "../utils/useFailedAttempts";
+import {
+    MAX_ACCOUNT_NUMBER_LENGTH,
+    isValidAccountNumber,
+    normalizeAccountNumberInput,
+} from "../utils/accountNumber.js";
 import "./PaymentPage.css";
 
 const EMPTY_FORM = {
@@ -69,7 +74,12 @@ export default function PaymentPage() {
 
     function handleChange(e) {
         const { name, value } = e.target;
-        setForm((prev) => ({ ...prev, [name]: value }));
+        const nextValue =
+            name === "recipient_account"
+                ? normalizeAccountNumberInput(value)
+                : value;
+
+        setForm((prev) => ({ ...prev, [name]: nextValue }));
 
         if (errors[name]) {
             setErrors((prev) => ({ ...prev, [name]: "" }));
@@ -286,7 +296,9 @@ export default function PaymentPage() {
                                     name="recipient_account"
                                     value={form.recipient_account}
                                     onChange={handleChange}
-                                    placeholder="npr. 160-0000000000000-00"
+                                    placeholder="npr. 333000112345678910"
+                                    inputMode="numeric"
+                                    maxLength={MAX_ACCOUNT_NUMBER_LENGTH}
                                 />
                                 {errors.recipient_account && (
                                     <p className="pay-error-text">{errors.recipient_account}</p>
